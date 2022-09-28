@@ -25,15 +25,6 @@ public class UserDataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public void run(String... args) throws Exception {
-
-        if(authorityRepository.count() == 0){
-            loadSecurityData();
-        }
-
-    }
-
     private void loadSecurityData() {
         Authority admin = authorityRepository.save(Authority.builder().role("ROLE_ADMIN").build());
         Authority userRole = authorityRepository.save(Authority.builder().role("ROLE_USER").build());
@@ -41,7 +32,7 @@ public class UserDataLoader implements CommandLineRunner {
 
         userRepository.save(User.builder()
                 .username("spring")
-                .password(passwordEncoder.encode("mfile"))
+                .password(passwordEncoder.encode("guru"))
                 .authority(admin)
                 .build());
 
@@ -57,6 +48,15 @@ public class UserDataLoader implements CommandLineRunner {
                 .authority(customer)
                 .build());
 
-        log.debug("Users loaded: " + userRepository.count());
+        log.debug("Users Loaded: " + userRepository.count());
     }
+
+    @Override
+    public void run(String... args) throws Exception {
+        if (authorityRepository.count() == 0) {
+            loadSecurityData();
+        }
+    }
+
+
 }

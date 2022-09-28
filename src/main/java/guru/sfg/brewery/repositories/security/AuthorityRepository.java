@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Date: Sep 22, 2022
  * Description:
  ***************************/
-public interface AuthorityRepository extends JpaRepository<Authority, Long> {
+public interface AuthorityRepository extends JpaRepository<Authority, Integer> {
 }

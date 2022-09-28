@@ -18,10 +18,10 @@ import java.util.Set;
 @Builder
 @Entity
 public class Authority {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     private String role;
 

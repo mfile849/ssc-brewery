@@ -21,8 +21,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     private String username;
     private String password;
@@ -30,8 +29,8 @@ public class User {
     @Singular
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "user_authority",
-            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
+        joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+        inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private Set<Authority> authorities;
 
     @Builder.Default
@@ -45,4 +44,5 @@ public class User {
 
     @Builder.Default
     private Boolean enabled = true;
+
 }
