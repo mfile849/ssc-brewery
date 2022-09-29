@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,34 +28,25 @@ public class CustomerControllerIT extends BaseIT {
     class ListCustomers{
         @ParameterizedTest(name = "#{index} with [{arguments}]")
         @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAdminCustomer")
-        void testListCustomerAuth(String user, String pwd) throws Exception {
-            mockMvc.perform(
-                    get("/customers").with(
-                            httpBasic(user, pwd)
-                    )
-            ).andExpect(
-                    status().isOk()
-            );
+        void testListCustomersAUTH(String user, String pwd) throws Exception {
+            mockMvc.perform(get("/customers")
+                    .with(httpBasic(user, pwd)))
+                    .andExpect(status().isOk());
+
         }
 
         @Test
         void testListCustomersNOTAUTH() throws Exception {
-            mockMvc.perform(
-                    get("/customers").with(
-                            httpBasic("user", "password")
-                    )
-            ).andExpect(
-                    status().isForbidden()
-            );
+            mockMvc.perform(get("/customers")
+                    .with(httpBasic("user", "password")))
+                    .andExpect(status().isForbidden());
         }
 
         @Test
         void testListCustomersNOTLOGGEDIN() throws Exception {
-            mockMvc.perform(
-                    get("/customers")
-            ).andExpect(
-                    status().isUnauthorized()
-            );
+            mockMvc.perform(get("/customers"))
+                    .andExpect(status().isUnauthorized());
+
         }
     }
 
@@ -65,37 +57,27 @@ public class CustomerControllerIT extends BaseIT {
         @Rollback
         @Test
         void processCreationForm() throws Exception{
-            mockMvc.perform(
-                    post("/customers/new")
-                        .param("customerName", "Foo Customer")
-                        .with(httpBasic("spring", "guru")
-                    )
-            ).andExpect(
-                    status().is3xxRedirection()
-            );
+            mockMvc.perform(post("/customers/new").with(csrf())
+                    .param("customerName", "Foo Customer")
+                    .with(httpBasic("spring", "guru")))
+                    .andExpect(status().is3xxRedirection());
         }
 
         @Rollback
         @ParameterizedTest(name = "#{index} with [{arguments}]")
         @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamNotAdmin")
         void processCreationFormNOTAUTH(String user, String pwd) throws Exception{
-            mockMvc.perform(
-                    post("/customers/new")
-                            .param("customerName", "Foo Customer2")
-                            .with(httpBasic(user, pwd))
-            ).andExpect(
-                    status().isForbidden()
-            );
+            mockMvc.perform(post("/customers/new")
+                    .param("customerName", "Foo Customer2")
+                    .with(httpBasic(user, pwd)))
+                    .andExpect(status().isForbidden());
         }
 
         @Test
         void processCreationFormNOAUTH() throws Exception{
-            mockMvc.perform(
-                    post("/customers/new")
-                            .param("customerName", "Foo Customer")
-            ).andExpect(
-                    status().isUnauthorized()
-            );
+            mockMvc.perform(post("/customers/new").with(csrf())
+                    .param("customerName", "Foo Customer"))
+                    .andExpect(status().isUnauthorized());
         }
     }
 
