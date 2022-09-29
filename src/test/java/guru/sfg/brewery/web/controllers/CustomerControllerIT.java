@@ -20,12 +20,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Description:
  ***************************/
 @SpringBootTest
-public class CustomerControllerIT extends BaseIT{
+public class CustomerControllerIT extends BaseIT {
 
     @DisplayName("List Customers")
     @Nested
-    class ListCustomers {
-
+    class ListCustomers{
         @ParameterizedTest(name = "#{index} with [{arguments}]")
         @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAdminCustomer")
         void testListCustomerAuth(String user, String pwd) throws Exception {
@@ -58,9 +57,10 @@ public class CustomerControllerIT extends BaseIT{
             );
         }
     }
+
     @DisplayName("Add Customers")
     @Nested
-    class AddCustomers{
+    class AddCustomers {
 
         @Rollback
         @Test
@@ -98,4 +98,5 @@ public class CustomerControllerIT extends BaseIT{
             );
         }
     }
+
 }

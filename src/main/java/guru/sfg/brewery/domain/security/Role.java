@@ -19,7 +19,6 @@ import java.util.Set;
 @Builder
 @Entity
 public class Role {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -35,4 +34,5 @@ public class Role {
         joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")},
         inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private Set<Authority> authorities;
+
 }

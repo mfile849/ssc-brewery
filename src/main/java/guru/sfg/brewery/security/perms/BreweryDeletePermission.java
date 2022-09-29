@@ -7,11 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 
 /****************************
  * Author: Michael File
- * Name: CustomerCreatePermissions
+ * Name: BreweryDeletePermissions
  * Date: Sep 28, 2022
  * Description:
  ***************************/
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority('customer.create')")
-public @interface CustomerCreatePermissions {
+@PreAuthorize("hasAuthority('brewery.delete')")
+public @interface BreweryDeletePermission {
 }
