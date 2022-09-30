@@ -89,7 +89,7 @@ public class User implements UserDetails, CredentialsContainer {
     private Boolean enabled = true;
 
     @Builder.Default
-    private Boolean useGoogle2fa = false;
+    private Boolean useGoogle2f = false;
 
     private String google2FaSecret;
 

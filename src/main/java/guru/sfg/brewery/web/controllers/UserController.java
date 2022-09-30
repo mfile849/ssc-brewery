@@ -1,5 +1,7 @@
 package guru.sfg.brewery.web.controllers;
 
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import guru.sfg.brewery.domain.security.User;
 import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.warrenstrange.googleauth.*;
 
 /****************************
  * Author: Michael File
@@ -36,7 +37,7 @@ public class UserController {
         String url = GoogleAuthenticatorQRGenerator.getOtpAuthURL("SFG", user.getUsername(),
                 googleAuthenticator.createCredentials(user.getUsername()));
 
-        log.debug("Google QR URl: " + url);
+        log.debug("Google QR URL: " + url);
 
         model.addAttribute("googleurl", url);
 
@@ -48,16 +49,16 @@ public class UserController {
 
         User user = getUser();
 
-        log.debug("Entered Code is: " + verifyCode);
+        log.debug("Entered Code is:" + verifyCode);
 
         if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
             User savedUser = userRepository.findById(user.getId()).orElseThrow();
-            savedUser.setUseGoogle2fa(true);
+            savedUser.setUseGoogle2f(true);
             userRepository.save(savedUser);
 
             return "/index";
         } else {
-            //bad code
+            // bad code
             return "user/register2fa";
         }
     }
@@ -68,19 +69,22 @@ public class UserController {
     }
 
     @PostMapping("/verify2fa")
-    public String verifyPostOf2fa(@RequestParam Integer verifyCode){
+    public String verifyPostOf2Fa(@RequestParam Integer verifyCode){
 
         User user = getUser();
 
         if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
-            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setGoogle2faRequired(false);
+            ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setGoogle2faRequired(false);
+
             return "/index";
         } else {
             return "user/verify2fa";
         }
     }
 
-    private static User getUser() {
+    private User getUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
+
 }
