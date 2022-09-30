@@ -23,55 +23,59 @@ import java.util.List;
  * Description:
  ***************************/
 @Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class AuthenticationFailureListener {
 
     private final LoginFailureRepository loginFailureRepository;
     private final UserRepository userRepository;
 
     @EventListener
-    public void listen(AuthenticationFailureBadCredentialsEvent event){
-        if (event.getSource() instanceof UsernamePasswordAuthenticationToken){
+    public void listen(AuthenticationFailureBadCredentialsEvent event) {
+        log.debug("Login failure");
+
+        if (event.getSource() instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) event.getSource();
             LoginFailure.LoginFailureBuilder builder = LoginFailure.builder();
 
-            UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken)  event.getSource();
-
-            if (token.getPrincipal() instanceof String){
-                String attemptedUser = (String) token.getPrincipal();
-
-                log.debug("User failed login: " + attemptedUser);
-
-                builder.attemptedUsername(attemptedUser);
-                userRepository.findByUsername(attemptedUser).ifPresent(builder::user);
+            if (token.getPrincipal() instanceof String) {
+                log.debug("Attempted Username: " + token.getPrincipal());
+                builder.username((String) token.getPrincipal());
+                userRepository.findByUsername((String) token.getPrincipal()).ifPresent(builder::user);
             }
 
             if (token.getDetails() instanceof WebAuthenticationDetails) {
                 WebAuthenticationDetails details = (WebAuthenticationDetails) token.getDetails();
 
                 log.debug("Source IP: " + details.getRemoteAddress());
-
                 builder.sourceIp(details.getRemoteAddress());
             }
-            LoginFailure loginFailure = loginFailureRepository.save(builder.build());
-            log.debug("Failed logon attempts saved. Id: " + loginFailure.getId());
+            LoginFailure failure = loginFailureRepository.save(builder.build());
+            log.debug("Failure Event: " + failure.getId());
 
-            if (loginFailure.getUser() != null){
-                lockUserAccount(loginFailure.getUser());
+            if (failure.getUser() != null) {
+                lockUserAccount(failure.getUser());
             }
         }
+
+
     }
 
     private void lockUserAccount(User user) {
-        List<LoginFailure> failures = loginFailureRepository.findAllByUserAndCreatedDateIsAfter(
-                user,
-                Timestamp.valueOf(LocalDateTime.now().minusDays(1))
-        );
+        List<LoginFailure> failures = loginFailureRepository.findAllByUserAndCreatedDateIsAfter(user,
+                Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
 
-        if (failures.size() > 3){
+        if(failures.size() > 3){
             log.debug("Locking User Account... ");
             user.setAccountNonLocked(false);
             userRepository.save(user);
         }
     }
+
+
+
+
+
+
+
 }

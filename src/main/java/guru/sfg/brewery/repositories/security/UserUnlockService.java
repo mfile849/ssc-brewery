@@ -23,20 +23,20 @@ public class UserUnlockService {
 
     private final UserRepository userRepository;
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 300000)
     public void unlockAccounts(){
         log.debug("Running Unlock Accounts");
 
-        List<User> lockedUsers = userRepository.findAllByAccountNonLockedAndLastModifiedDateIsBefore(
-                false,
-                Timestamp.valueOf(LocalDateTime.now().minusSeconds(30))
-        );
+        List<User> lockedUsers = userRepository
+                .findAllByAccountNonLockedAndLastModifiedDateIsBefore(false,
+                        Timestamp.valueOf(LocalDateTime.now().minusSeconds(30)));
 
-        if (lockedUsers.size() > 0) {
+        if(lockedUsers.size() > 0){
             log.debug("Locked Accounts Found, Unlocking");
             lockedUsers.forEach(user -> user.setAccountNonLocked(true));
 
             userRepository.saveAll(lockedUsers);
         }
     }
+
 }

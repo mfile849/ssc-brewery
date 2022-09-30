@@ -27,7 +27,9 @@ public class AuthenticationSuccessListener {
     @EventListener
     public void listen(AuthenticationSuccessEvent event){
 
-        if (event.getSource() instanceof UsernamePasswordAuthenticationToken){
+        log.debug("User Logged In Okay");
+
+        if (event.getSource() instanceof UsernamePasswordAuthenticationToken) {
             LoginSuccess.LoginSuccessBuilder builder = LoginSuccess.builder();
 
             UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) event.getSource();
@@ -36,17 +38,22 @@ public class AuthenticationSuccessListener {
                 User user = (User) token.getPrincipal();
                 builder.user(user);
 
-                log.debug("User logged in: " + user.getUsername());
+                log.debug("User name logged in: " + user.getUsername() );
             }
 
-            if (token.getDetails() instanceof WebAuthenticationDetails) {
+            if(token.getDetails() instanceof WebAuthenticationDetails){
                 WebAuthenticationDetails details = (WebAuthenticationDetails) token.getDetails();
-                builder.sourceIp(details.getRemoteAddress());
 
                 log.debug("Source IP: " + details.getRemoteAddress());
+                builder.sourceIp(details.getRemoteAddress());
             }
+
             LoginSuccess loginSuccess = loginSuccessRepository.save(builder.build());
-            log.debug("Login Success saved. ID: " + loginSuccess.getId());
+
+            log.debug("Login Success saved. Id: " + loginSuccess.getId());
         }
+
+
+
     }
 }

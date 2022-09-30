@@ -20,15 +20,15 @@ import java.sql.Timestamp;
 @Setter
 @Entity
 public class LoginFailure {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    private String username;
+
     @ManyToOne
     private User user;
 
-    private String attemptedUsername;
     private String sourceIp;
 
     @CreationTimestamp
